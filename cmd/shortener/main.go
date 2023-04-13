@@ -2,7 +2,7 @@ package main
 
 import (
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -10,28 +10,28 @@ import (
 
 func mainPage(res http.ResponseWriter, req *http.Request) {
 	if req.Method == http.MethodPost {
-		body, err := ioutil.ReadAll(req.Body)
+		body, err := io.ReadAll(req.Body)
 		if err != nil {
 			panic(err)
 		}
-		tFile, err := ioutil.TempFile("", "")
+		tFile, err := os.CreateTemp("", "")
 		if err != nil {
 			panic(err)
 		}
-		err = ioutil.WriteFile(tFile.Name(), body, 0644)
+		err = os.WriteFile(tFile.Name(), body, 0644)
 		if err != nil {
 			panic(err)
 		}
 		res.WriteHeader(http.StatusCreated)
 		res.Write([]byte("http://localhost:8080/" + filepath.Base(tFile.Name())))
 	} else {
-		tFile, err := ioutil.TempFile("", "")
+		tFile, err := os.CreateTemp("", "")
 		if err != nil {
 			panic(err)
 		}
 		filename := filepath.Dir(tFile.Name()) + req.RequestURI
 		if _, err := os.Stat(filename); err == nil {
-			data, fErr := ioutil.ReadFile(filename)
+			data, fErr := os.ReadFile(filename)
 			if fErr != nil {
 				panic(fErr)
 			}
