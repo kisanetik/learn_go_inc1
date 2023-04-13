@@ -24,7 +24,6 @@ func mainPage(res http.ResponseWriter, req *http.Request) {
 		}
 		res.WriteHeader(http.StatusCreated)
 		res.Write([]byte("http://localhost:8080/" + filepath.Base(tFile.Name())))
-		// res.Write([]byte("http://" + string(req.URL.Host) + ":" + string(req.URL.Port()) + "/" + filepath.Base(tFile.Name())))
 	} else {
 		tFile, err := ioutil.TempFile("", "")
 		if err != nil {
@@ -43,7 +42,6 @@ func mainPage(res http.ResponseWriter, req *http.Request) {
 		} else {
 			panic(err)
 		}
-		// res.Write([]byte("Not post: " + filename))
 		defer os.Remove(tFile.Name())
 	}
 }
