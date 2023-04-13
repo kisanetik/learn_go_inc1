@@ -36,7 +36,7 @@ func mainPage(res http.ResponseWriter, req *http.Request) {
 				panic(fErr)
 			}
 			res.Header().Add("Location", string(data))
-			res.WriteHeader(http.StatusMovedPermanently)
+			res.WriteHeader(http.StatusTemporaryRedirect)
 		} else if errors.Is(err, os.ErrNotExist) {
 			res.WriteHeader(http.StatusNotFound)
 		} else {
