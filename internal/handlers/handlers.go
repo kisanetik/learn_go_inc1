@@ -10,7 +10,7 @@ import (
 	linker "github.com/kisanetik/learn_go_inc1/internal/app"
 )
 
-func methodPost(res http.ResponseWriter, req *http.Request) {
+func MethodPost(res http.ResponseWriter, req *http.Request) {
 	body, _ := io.ReadAll(req.Body)
 	if len(body) == 0 {
 		res.WriteHeader(http.StatusBadRequest)
@@ -20,7 +20,7 @@ func methodPost(res http.ResponseWriter, req *http.Request) {
 	res.Write([]byte(location))
 }
 
-func methodGet(res http.ResponseWriter, req *http.Request) {
+func MethodGet(res http.ResponseWriter, req *http.Request) {
 	tFile, err := os.CreateTemp("", "")
 	if err != nil {
 		panic(err)
@@ -43,11 +43,10 @@ func methodGet(res http.ResponseWriter, req *http.Request) {
 
 func LinkerHandler(res http.ResponseWriter, request *http.Request) {
 	res.Header().Set("Content-Type", "text/plain")
-
 	if request.Method == http.MethodPost {
-		methodPost(res, request)
+		MethodPost(res, request)
 	} else if request.Method == http.MethodGet {
-		methodGet(res, request)
+		MethodGet(res, request)
 	} else {
 		res.WriteHeader(http.StatusBadRequest)
 	}
