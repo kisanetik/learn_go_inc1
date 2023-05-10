@@ -17,7 +17,7 @@ func methodPost(res http.ResponseWriter, req *http.Request) {
 	}
 	location := linker.CompressURL(string(body))
 	res.WriteHeader(http.StatusCreated)
-	res.Write([]byte("http://localhost:8080/" + location))
+	res.Write([]byte(location))
 }
 
 func methodGet(res http.ResponseWriter, req *http.Request) {
