@@ -1,10 +1,11 @@
 package linker
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
+	"github.com/goware/urlx"
 	"github.com/kisanetik/learn_go_inc1/config"
 )
 
@@ -21,8 +22,12 @@ func CompressURL(url string) string {
 func makeHostFromConfig() string {
 	_, port := config.LoadConfig()
 
-	if strings.Contains(*config.BaseURL, ":") {
-		return *config.BaseURL
+	url, _ := urlx.Parse(*config.BaseURL)
+	host, port1, _ := urlx.SplitHostPort(url)
+	if port1 != "" {
+		fmt.Println("Contains " + *config.BaseURL + "/")
+		return url.Scheme + "://" + host + ":" + port1
 	}
+	fmt.Println("NOT contains" + *config.BaseURL)
 	return *config.BaseURL + port
 }
