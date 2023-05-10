@@ -9,8 +9,8 @@ import (
 )
 
 type cfg struct {
-	ServerAddress string `env:"SERVER_ADDRESS" envDefault:""`
-	BaseURL       string `env:"BASE_URL" envDefault:""`
+	ServerAddress string `env:"SERVER_ADDRESS"`
+	BaseURL       string `env:"BASE_URL"`
 }
 
 var conf cfg
@@ -18,6 +18,7 @@ var conf cfg
 func init() {
 	HTTPAddr := flag.String("a", "localhost:8080", "Server address, default is localhost:8080")
 	BaseURL := flag.String("b", "http://localhost", "Base URL, default is http://localhost")
+	flag.Parse()
 	conf = cfg{
 		ServerAddress: *HTTPAddr,
 		BaseURL:       *BaseURL,
