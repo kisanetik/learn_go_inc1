@@ -40,14 +40,3 @@ func MethodGet(res http.ResponseWriter, req *http.Request) {
 	}
 	defer os.Remove(tFile.Name())
 }
-
-func LinkerHandler(res http.ResponseWriter, request *http.Request) {
-	res.Header().Set("Content-Type", "text/plain")
-	if request.Method == http.MethodPost {
-		MethodPost(res, request)
-	} else if request.Method == http.MethodGet {
-		MethodGet(res, request)
-	} else {
-		res.WriteHeader(http.StatusBadRequest)
-	}
-}

@@ -16,22 +16,25 @@ type cfg struct {
 var conf cfg
 
 func init() {
-	HTTPAddr := flag.String("a", "localhost:8080", "Server address, default is localhost:8080")
-	BaseURL := flag.String("b", "http://localhost", "Base URL, default is http://localhost")
-	flag.Parse()
 	conf = cfg{
-		ServerAddress: *HTTPAddr,
-		BaseURL:       *BaseURL,
+		ServerAddress: "localhost:8080",
+		BaseURL:       "http://localhost",
 	}
 	if err := env.Parse(&conf); err != nil {
 		fmt.Println("failed:", err)
 	}
+	conf.loadFlags()
 }
 
 func LoadConfig() (string, string) {
 	host, port := splitHostURL(conf.ServerAddress)
 
 	return host, port
+}
+
+func (cfg *cfg) loadFlags() {
+	flag.StringVar(&cfg.ServerAddress, "a", cfg.ServerAddress, "Server address, default is localhost:8080")
+	flag.StringVar(&cfg.BaseURL, "b", cfg.BaseURL, "Base URL, default is http://localhost")
 }
 
 func GetConf() cfg {
