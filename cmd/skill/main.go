@@ -1,12 +1,15 @@
 // пакеты исполняемых приложений должны называться main
-package skill
+package main
 
 import (
+	"fmt"
 	"net/http"
 )
 
 // функция main вызывается автоматически при запуске приложения
 func main() {
+	// обрабатываем аргументы командной строки
+	parseFlags()
 	if err := run(); err != nil {
 		panic(err)
 	}
@@ -14,6 +17,7 @@ func main() {
 
 // функция run будет полезна при инициализации зависимостей сервера перед запуском
 func run() error {
+	fmt.Println("Running server on", flagRunAddr)
 	return http.ListenAndServe(`:8080`, http.HandlerFunc(webhook))
 }
 

@@ -1,4 +1,4 @@
-package skill
+package main
 
 import (
 	"net/http"
