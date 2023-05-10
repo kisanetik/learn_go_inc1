@@ -11,9 +11,9 @@ import (
 )
 
 func methodPost(res http.ResponseWriter, req *http.Request) {
-	body, err := io.ReadAll(req.Body)
-	if err != nil {
-		panic(err)
+	body, _ := io.ReadAll(req.Body)
+	if len(body) == 0 {
+		res.WriteHeader(http.StatusBadRequest)
 	}
 	location := linker.CompressURL(string(body))
 	res.WriteHeader(http.StatusCreated)
@@ -41,14 +41,14 @@ func methodGet(res http.ResponseWriter, req *http.Request) {
 	defer os.Remove(tFile.Name())
 }
 
-func LinkerHandler(writer http.ResponseWriter, request *http.Request) {
-	writer.Header().Set("Content-Type", "text/plain")
+func LinkerHandler(res http.ResponseWriter, request *http.Request) {
+	res.Header().Set("Content-Type", "text/plain")
 
 	if request.Method == http.MethodPost {
-		methodPost(writer, request)
+		methodPost(res, request)
 	} else if request.Method == http.MethodGet {
-		methodGet(writer, request)
+		methodGet(res, request)
 	} else {
-		writer.WriteHeader(http.StatusBadRequest)
+		res.WriteHeader(http.StatusBadRequest)
 	}
 }
