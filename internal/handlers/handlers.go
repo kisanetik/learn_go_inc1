@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+
+	linker "github.com/kisanetik/learn_go_inc1/internal/app"
 )
 
 func methodPost(res http.ResponseWriter, req *http.Request) {
@@ -13,17 +15,9 @@ func methodPost(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	tFile, err := os.CreateTemp("", "")
-	os.WriteFile(tFile.Name(), body, 0644)
-	if err != nil {
-		panic(err)
-	}
-	err = os.WriteFile(tFile.Name(), body, 0644)
-	if err != nil {
-		panic(err)
-	}
+	location := linker.CompressUrl(string(body))
 	res.WriteHeader(http.StatusCreated)
-	res.Write([]byte("http://localhost:8080/" + filepath.Base(tFile.Name())))
+	res.Write([]byte("http://localhost:8080/" + location))
 }
 
 func methodGet(res http.ResponseWriter, req *http.Request) {
