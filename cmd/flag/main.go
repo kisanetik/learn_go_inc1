@@ -12,9 +12,9 @@ func main() {
 
 	flag.Parse()
 	// получаем список файлов
-	for i, v := range flag.Args() {
-		fmt.Printf("Image file (%d):\r\n", i, v)
-	}
+	// for i, v := range flag.Args() {
+	// 	fmt.Printf("Image file (%d):\r\n", i, v)
+	// }
 	fmt.Println("Destination folder:", *destDir)
 	fmt.Println("Width:", *width)
 	fmt.Println("Thumbs:", *isThumb)
