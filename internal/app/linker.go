@@ -1,7 +1,6 @@
 package linker
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -22,12 +21,10 @@ func CompressURL(url string) string {
 func makeHostFromConfig() string {
 	_, port := config.LoadConfig()
 
-	url, _ := urlx.Parse(*config.BaseURL)
+	url, _ := urlx.Parse(config.GetConf().BaseURL)
 	host, port1, _ := urlx.SplitHostPort(url)
 	if port1 != "" {
-		fmt.Println("Contains " + *config.BaseURL + "/")
 		return url.Scheme + "://" + host + ":" + port1
 	}
-	fmt.Println("NOT contains" + *config.BaseURL)
-	return *config.BaseURL + port
+	return config.GetConf().BaseURL + port
 }

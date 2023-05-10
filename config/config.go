@@ -9,21 +9,18 @@ import (
 )
 
 type cfg struct {
-	SERVER_ADDRESS string `env:"SERVER_ADDRESS" envDefault:""`
-	BASE_URL       string `env:"BASE_URL" envDefault:""`
+	ServerAddress string `env:"SERVER_ADDRESS" envDefault:""`
+	BaseURL       string `env:"BASE_URL" envDefault:""`
 }
 
-var (
-	HTTPAddr *string
-	BaseURL  *string
-)
+var conf cfg
 
 func init() {
-	HTTPAddr = flag.String("a", "localhost:8080", "Server address, default is localhost:8080")
-	BaseURL = flag.String("b", "http://localhost", "Base URL, default is http://localhost")
-	var conf = cfg{
-		SERVER_ADDRESS: *HTTPAddr,
-		BASE_URL:       *BaseURL,
+	HTTPAddr := flag.String("a", "localhost:8080", "Server address, default is localhost:8080")
+	BaseURL := flag.String("b", "http://localhost", "Base URL, default is http://localhost")
+	conf = cfg{
+		ServerAddress: *HTTPAddr,
+		BaseURL:       *BaseURL,
 	}
 	if err := env.Parse(&conf); err != nil {
 		fmt.Println("failed:", err)
@@ -31,9 +28,13 @@ func init() {
 }
 
 func LoadConfig() (string, string) {
-	host, port := splitHostURL(*HTTPAddr)
+	host, port := splitHostURL(*&conf.ServerAddress)
 
 	return host, port
+}
+
+func GetConf() cfg {
+	return conf
 }
 
 func splitHostURL(httpAddr string) (string, string) {
