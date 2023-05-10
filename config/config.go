@@ -28,7 +28,7 @@ func init() {
 }
 
 func LoadConfig() (string, string) {
-	host, port := splitHostURL(*&conf.ServerAddress)
+	host, port := splitHostURL(conf.ServerAddress)
 
 	return host, port
 }
