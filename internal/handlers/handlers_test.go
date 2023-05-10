@@ -18,10 +18,10 @@ func TestMethodEmptyPost(t *testing.T) {
 
 func TestMethodOkPost(t *testing.T) {
 	bodyReader := strings.NewReader("http://ya.ru")
-	emptyBodyReq := httptest.NewRequest("POST", "/", bodyReader)
-	emptyBodyRes := httptest.NewRecorder()
-	methodPost(emptyBodyRes, emptyBodyReq)
-	if emptyBodyRes.Code != http.StatusCreated {
-		t.Errorf("Ожидаемый статус код %v, получен %v", http.StatusCreated, emptyBodyRes.Code)
+	BodyReq := httptest.NewRequest("POST", "/", bodyReader)
+	BodyRes := httptest.NewRecorder()
+	methodPost(BodyRes, BodyReq)
+	if BodyRes.Code != http.StatusCreated {
+		t.Errorf("Ожидаемый статус код %v, получен %v", http.StatusCreated, BodyRes.Code)
 	}
 }
