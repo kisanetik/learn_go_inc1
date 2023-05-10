@@ -15,7 +15,7 @@ func methodPost(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	location := linker.CompressUrl(string(body))
+	location := linker.CompressURL(string(body))
 	res.WriteHeader(http.StatusCreated)
 	res.Write([]byte("http://localhost:8080/" + location))
 }

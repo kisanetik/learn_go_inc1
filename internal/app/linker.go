@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 )
 
-func CompressUrl(url string) string {
+func CompressURL(url string) string {
 	tFile, err := os.CreateTemp("", "")
 	if err != nil {
 		panic(err)
