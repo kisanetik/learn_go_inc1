@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	linker "github.com/kisanetik/learn_go_inc1/internal/app"
+	urlmaker "github.com/kisanetik/learn_go_inc1/internal/app"
 )
 
 func MethodPost(res http.ResponseWriter, req *http.Request) {
@@ -15,7 +15,7 @@ func MethodPost(res http.ResponseWriter, req *http.Request) {
 	if len(body) == 0 {
 		res.WriteHeader(http.StatusBadRequest)
 	}
-	location := linker.CompressURL(string(body))
+	location := urlmaker.CompressURL(string(body))
 	res.WriteHeader(http.StatusCreated)
 	res.Write([]byte(location))
 }
