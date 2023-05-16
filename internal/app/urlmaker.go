@@ -17,7 +17,7 @@ func CompressURL(url string) string {
 	}
 	os.WriteFile(tFile.Name(), []byte(url), 0644)
 
-	return string(makeHostFromConfig() + "/" + filepath.Base(tFile.Name()))
+	return fmt.Sprintf("%s/%s", makeHostFromConfig(), filepath.Base(tFile.Name()))
 }
 
 func makeHostFromConfig() string {
