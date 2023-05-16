@@ -23,13 +23,15 @@ func MethodPost(res http.ResponseWriter, req *http.Request) {
 func MethodGet(res http.ResponseWriter, req *http.Request) {
 	tFile, err := os.CreateTemp("", "")
 	if err != nil {
-		panic(err)
+		res.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	filename := filepath.Dir(tFile.Name()) + req.RequestURI
 	if _, err := os.Stat(filename); err == nil {
 		data, fErr := os.ReadFile(filename)
 		if fErr != nil {
-			panic(fErr)
+			res.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 		res.Header().Add("Location", string(data))
 		res.WriteHeader(http.StatusTemporaryRedirect)
