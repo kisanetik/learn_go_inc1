@@ -7,6 +7,7 @@ import (
 
 	"github.com/kisanetik/learn_go_inc1/config"
 	"github.com/kisanetik/learn_go_inc1/internal/handlers"
+	logger "github.com/kisanetik/learn_go_inc1/internal/logging"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -17,7 +18,7 @@ func main() {
 
 	r := chi.NewRouter()
 
-	r.Get("/{id}", handlers.MethodGet)
-	r.Post("/", handlers.MethodPost)
+	r.Get("/{id}", logger.ResponseLogger(handlers.MethodGet))
+	r.Post("/", logger.RequestLogger(handlers.MethodPost))
 	log.Fatal(http.ListenAndServe(port, r))
 }

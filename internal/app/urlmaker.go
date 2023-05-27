@@ -2,18 +2,25 @@ package urlmaker
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/goware/urlx"
 	"github.com/kisanetik/learn_go_inc1/config"
+	"go.uber.org/zap"
 )
 
 func CompressURL(url string) string {
 	tFile, err := os.CreateTemp("", "")
 	if err != nil {
-		log.Fatal(err)
+		logger, err := zap.NewDevelopment()
+		if err != nil {
+			// вызываем панику, если ошибка
+			panic("cannot initialize zap")
+		}
+		defer logger.Sync()
+		sugar := logger.Sugar()
+		sugar.Errorf("Error when create temporary file: %s", err)
 	}
 	os.WriteFile(tFile.Name(), []byte(url), 0644)
 
