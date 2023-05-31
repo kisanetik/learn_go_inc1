@@ -61,12 +61,7 @@ func JSONsPost(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	var err error
 	jsonres.ShortURL = urlmaker.CompressURL(string(url.UserURL))
-	if err != nil {
-		res.WriteHeader(http.StatusBadRequest)
-		return
-	}
 	resp, err := json.Marshal(map[string]string{"result": jsonres.ShortURL})
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
