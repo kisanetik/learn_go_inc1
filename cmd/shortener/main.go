@@ -20,5 +20,6 @@ func main() {
 
 	r.Get("/{id}", logger.ResponseLogger(handlers.MethodGet))
 	r.Post("/", logger.RequestLogger(handlers.MethodPost))
+	r.Post("/api/shorten", logger.RequestLogger(handlers.JsonPost))
 	log.Fatal(http.ListenAndServe(port, r))
 }

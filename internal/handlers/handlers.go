@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"encoding/json"
 	"errors"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -41,4 +43,37 @@ func MethodGet(res http.ResponseWriter, req *http.Request) {
 		panic(err)
 	}
 	defer os.Remove(tFile.Name())
+}
+
+type URL struct {
+	UserURL string `json:"url"`
+}
+
+type Result struct {
+	ShortURL string `json:"result"`
+}
+
+func JsonPost(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-Type", "application/json")
+	var url URL
+	var jsonres Result
+	if err := json.NewDecoder(req.Body).Decode(&url); err != nil {
+		res.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	var err error
+	jsonres.ShortURL = urlmaker.CompressURL(string(url.UserURL))
+	if err != nil {
+		res.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	resp, err := json.Marshal(map[string]string{"result": jsonres.ShortURL})
+	if err != nil {
+		res.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	res.WriteHeader(http.StatusCreated)
+	if _, err := res.Write(resp); err != nil {
+		log.Fatal("Failed to send URL on json handler")
+	}
 }
