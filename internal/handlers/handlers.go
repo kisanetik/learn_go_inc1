@@ -53,7 +53,7 @@ type Result struct {
 	ShortURL string `json:"result"`
 }
 
-func JsonPost(res http.ResponseWriter, req *http.Request) {
+func JSONsPost(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json")
 	var url URL
 	var jsonres Result
