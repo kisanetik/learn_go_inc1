@@ -9,16 +9,18 @@ import (
 )
 
 type cfg struct {
-	ServerAddress string `env:"SERVER_ADDRESS"`
-	BaseURL       string `env:"BASE_URL"`
+	ServerAddress   string `env:"SERVER_ADDRESS"`
+	BaseURL         string `env:"BASE_URL"`
+	FileStoragePath string `env:"FILE_STORAGE_PATH"`
 }
 
 var conf cfg
 
 func init() {
 	conf = cfg{
-		ServerAddress: "localhost:8080",
-		BaseURL:       "http://localhost",
+		ServerAddress:   "localhost:8080",
+		BaseURL:         "http://localhost",
+		FileStoragePath: "/tmp/short-url-db.json",
 	}
 	if err := env.Parse(&conf); err != nil {
 		fmt.Println("failed:", err)
@@ -35,6 +37,7 @@ func LoadConfig() (string, string) {
 func (cfg *cfg) loadFlags() {
 	flag.StringVar(&cfg.ServerAddress, "a", cfg.ServerAddress, "Server address, default is localhost:8080")
 	flag.StringVar(&cfg.BaseURL, "b", cfg.BaseURL, "Base URL, default is http://localhost")
+	flag.StringVar(&cfg.BaseURL, "f", cfg.BaseURL, "FILE_STORAGE_PATH, default is /tmp/short-url-db.json")
 }
 
 func GetConf() cfg {

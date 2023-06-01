@@ -1,7 +1,9 @@
 package urlmaker
 
 import (
+	"bufio"
 	"fmt"
+	"math/rand"
 	"os"
 	"path/filepath"
 
@@ -9,6 +11,45 @@ import (
 	"github.com/kisanetik/learn_go_inc1/config"
 	"go.uber.org/zap"
 )
+
+const letters = 8
+
+type URLData struct {
+	UUID        string `json:"uuid"`
+	ShortURL    string `json:"short_url"`
+	OriginalURL string `json:"original_url"`
+}
+
+type Mem struct {
+	memory map[string]URLData
+}
+
+var cache *Mem
+
+func RandomString() string {
+	literals := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
+
+	l := make([]rune, letters)
+	for i := range l {
+		l[i] = literals[rand.Intn(len(literals))]
+	}
+
+	return string(l)
+}
+
+func getCache() (*Mem, error) {
+	if nil == cache {
+		file, err := os.OpenFile(config.GetConf().FileStoragePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
+		if err != nil {
+			return nil, err
+		}
+		defer file.Close()
+
+		scanner := bufio.NewScanner(file)
+	}
+
+	return cache
+}
 
 func CompressURL(url string) string {
 	tFile, err := os.CreateTemp("", "")
