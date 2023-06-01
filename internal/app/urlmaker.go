@@ -1,7 +1,7 @@
 package urlmaker
 
 import (
-	"bufio"
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"os"
@@ -40,15 +40,16 @@ func RandomString() string {
 func getCache() (*Mem, error) {
 	if nil == cache {
 		file, err := os.OpenFile(config.GetConf().FileStoragePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
+		defer file.Close()
 		if err != nil {
 			return nil, err
 		}
-		defer file.Close()
-
-		scanner := bufio.NewScanner(file)
+		if err := json.NewDecoder(file).Decode(cache); err != nil {
+			return nil, err
+		}
 	}
 
-	return cache
+	return cache, nil
 }
 
 func CompressURL(url string) string {
