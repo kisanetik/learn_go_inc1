@@ -34,7 +34,7 @@ func Response(next http.Handler) http.Handler {
 		defer func(gz *gzip.Writer) {
 			err = gz.Close()
 			if err != nil {
-				log.Fatal("Failed to send gzipped chunk: %v", err)
+				log.Fatal("Failed to send gzipped chunk")
 			}
 		}(gz)
 
