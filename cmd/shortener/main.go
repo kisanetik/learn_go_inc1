@@ -7,8 +7,9 @@ import (
 
 	"github.com/kisanetik/learn_go_inc1/config"
 	"github.com/kisanetik/learn_go_inc1/internal/handlers"
-	logger "github.com/kisanetik/learn_go_inc1/internal/logging"
+	gzip "github.com/kisanetik/learn_go_inc1/internal/middleware"
 
+	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -18,8 +19,15 @@ func main() {
 
 	r := chi.NewRouter()
 
-	r.Get("/{id}", logger.ResponseLogger(handlers.MethodGet))
-	r.Post("/", logger.RequestLogger(handlers.MethodPost))
-	r.Post("/api/shorten", logger.RequestLogger(handlers.JSONsPost))
+	//MIDDLEWARE LIST
+	r.Use(middleware.Logger)
+	r.Use(gzip.Request)
+	r.Use(gzip.Response)
+
+	//ROUTES LIST
+	r.Get("/{id}", handlers.MethodGet)
+	r.Post("/", handlers.MethodPost)
+	r.Post("/api/shorten", handlers.JSONsPost)
+
 	log.Fatal(http.ListenAndServe(port, r))
 }
