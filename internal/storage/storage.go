@@ -40,9 +40,5 @@ func AddToData(record URLData) {
 func Save() bool {
 	strJSON, _ := json.Marshal(cache)
 	err := os.WriteFile(config.GetConf().FileStoragePath, strJSON, 0666)
-	if err == nil {
-		return true
-	}
-
-	return false
+	return err == nil
 }
