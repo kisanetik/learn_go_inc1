@@ -1,76 +1,44 @@
 package urlmaker
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/rand"
-	"os"
-	"path/filepath"
+	"time"
 
 	"github.com/goware/urlx"
 	"github.com/kisanetik/learn_go_inc1/config"
-	"go.uber.org/zap"
+	"github.com/kisanetik/learn_go_inc1/internal/storage"
 )
 
 const letters = 8
-
-type URLData struct {
-	UUID        string `json:"uuid"`
-	ShortURL    string `json:"short_url"`
-	OriginalURL string `json:"original_url"`
-}
-
-type Mem struct {
-	memory map[string]URLData
-}
-
-var cache *Mem
 
 func RandomString() string {
 	literals := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
 
 	l := make([]rune, letters)
 	for i := range l {
-		l[i] = literals[rand.Intn(len(literals))]
+		pos := rand.Intn(len(literals)) + int(time.Now().UnixNano()/int64(time.Millisecond)%10)
+		if pos > (len(literals) - 1) {
+			pos = pos - len(literals)
+		}
+		if pos < 0 {
+			pos = pos * pos
+		}
+		l[i] = literals[pos]
 	}
-
 	return string(l)
 }
 
-func getCache() (*Mem, error) {
-	if nil == cache {
-		file, err := os.OpenFile(config.GetConf().FileStoragePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
-		defer file.Close()
-		if err != nil {
-			return nil, err
-		}
-		if err := json.NewDecoder(file).Decode(cache); err != nil {
-			return nil, err
-		}
-	}
-
-	return cache, nil
-}
-
 func CompressURL(url string) string {
-	tFile, err := os.CreateTemp("", "")
-	if err != nil {
-		logger, err := zap.NewDevelopment()
-		if err != nil {
-			// вызываем панику, если ошибка
-			panic("cannot initialize zap")
-		}
-		defer logger.Sync()
-		sugar := logger.Sugar()
-		sugar.Errorf("Error when create temporary file: %s", err)
-	}
-	os.WriteFile(tFile.Name(), []byte(url), 0644)
+	rand := RandomString()
+	short := fmt.Sprintf("%s/%s", makeHostFromConfig(), rand)
+	record := storage.URLData{UUID: rand, ShortURL: short, OriginalURL: url}
+	storage.AddToConfig(record)
 
-	return fmt.Sprintf("%s/%s", makeHostFromConfig(), filepath.Base(tFile.Name()))
+	return short
 }
 
 func makeHostFromConfig() string {
-	// var link strings.Builder
 	_, port := config.LoadConfig()
 
 	url, _ := urlx.Parse(config.GetConf().BaseURL)
