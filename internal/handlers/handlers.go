@@ -2,14 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
-	"errors"
 	"io"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
+	"strings"
 
 	urlmaker "github.com/kisanetik/learn_go_inc1/internal/app"
+	"github.com/kisanetik/learn_go_inc1/internal/storage"
 )
 
 func MethodPost(res http.ResponseWriter, req *http.Request) {
@@ -23,26 +22,14 @@ func MethodPost(res http.ResponseWriter, req *http.Request) {
 }
 
 func MethodGet(res http.ResponseWriter, req *http.Request) {
-	tFile, err := os.CreateTemp("", "")
-	if err != nil {
-		res.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	filename := filepath.Dir(tFile.Name()) + req.RequestURI
-	if _, err := os.Stat(filename); err == nil {
-		data, fErr := os.ReadFile(filename)
-		if fErr != nil {
-			res.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		res.Header().Add("Location", string(data))
+	data := storage.GetData()
+	hash := strings.TrimPrefix(req.RequestURI, "/")
+	if val, ok := data[hash]; ok {
+		res.Header().Add("Location", string(val.OriginalURL))
 		res.WriteHeader(http.StatusTemporaryRedirect)
-	} else if errors.Is(err, os.ErrNotExist) {
-		res.WriteHeader(http.StatusNotFound)
 	} else {
-		panic(err)
+		res.WriteHeader(http.StatusNotFound)
 	}
-	defer os.Remove(tFile.Name())
 }
 
 type URL struct {

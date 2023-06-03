@@ -32,7 +32,8 @@ func GetData() Mem {
 	return cache
 }
 
-func AddToConfig(record URLData) {
+func AddToData(record URLData) {
+	cache := GetData()
 	cache[record.UUID] = record
 }
 

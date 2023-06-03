@@ -33,7 +33,8 @@ func CompressURL(url string) string {
 	rand := RandomString()
 	short := fmt.Sprintf("%s/%s", makeHostFromConfig(), rand)
 	record := storage.URLData{UUID: rand, ShortURL: short, OriginalURL: url}
-	storage.AddToConfig(record)
+	storage.AddToData(record)
+	storage.Save()
 
 	return short
 }
