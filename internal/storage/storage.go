@@ -19,7 +19,7 @@ var cache Mem
 
 func GetData() Mem {
 	if nil == cache {
-		cache = *&Mem{}
+		cache = Mem{}
 		serialized, err := os.ReadFile(config.GetConf().FileStoragePath)
 		if !os.IsNotExist(err) && len(serialized) > 2 {
 			if err := json.Unmarshal(serialized, &cache); err != nil {
@@ -38,11 +38,11 @@ func AddToData(record URLData) {
 }
 
 func Save() bool {
-	strJson, _ := json.Marshal(cache)
-	err := os.WriteFile(config.GetConf().FileStoragePath, strJson, 0666)
-	if err != nil {
-		return false
+	strJSON, _ := json.Marshal(cache)
+	err := os.WriteFile(config.GetConf().FileStoragePath, strJSON, 0666)
+	if err == nil {
+		return true
 	}
 
-	return true
+	return false
 }
