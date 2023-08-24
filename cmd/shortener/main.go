@@ -1,15 +1,17 @@
 package main
 
 import (
+	"log"
+	"net/http"
+
+	"github.com/kisanetik/learn_go_inc1/internal/config"
 	"github.com/kisanetik/learn_go_inc1/internal/handlers"
 	"github.com/kisanetik/learn_go_inc1/internal/logger"
 	store "github.com/kisanetik/learn_go_inc1/internal/storage"
-	"log"
-	"net/http"
 )
 
 func main() {
-	cfg, err := Config.LoadConfig()
+	cfg, err := config.LoadConfig()
 	if err != nil {
 		logger.Fatalf("Can't read config: %w", err)
 	}
