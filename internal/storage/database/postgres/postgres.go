@@ -2,41 +2,125 @@ package postgres
 
 import (
 	"context"
+	"fmt"
+	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/kisanetik/learn_go_inc1/internal/logger"
+	"github.com/kisanetik/learn_go_inc1/internal/utils"
+	uuid "github.com/vgarvardt/pgx-google-uuid/v5"
 )
 
 type DB struct {
 	db *pgxpool.Pool
 }
 
-func NewDB(addrConn string) (*DB, error) {
-	addr, err := pgxpool.ParseConfig(addrConn)
+var Count uint64
+
+func NewPostgresDB(addrConn string) (*DB, error) {
+	conn, err := pgxpool.ParseConfig(addrConn)
 	if err != nil {
-		logger.Errorf("error parse config: %s", err)
+		return nil, fmt.Errorf("error parse config: %w", err)
 	}
 
-	conn, err := pgxpool.NewWithConfig(context.Background(), addr)
+	conn.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
+		uuid.Register(conn.TypeMap())
+		return nil
+	}
+
+	db, err := pgxpool.NewWithConfig(context.Background(), conn)
 	if err != nil {
-		logger.Errorf("Error create NewWithConfig : %s", err)
+		return nil, fmt.Errorf("error new config: %w", err)
 	}
 
-	db := &DB{
-		db: conn,
+	psql := &DB{db: db}
+
+	exists, err := psql.checkIsTablesExists()
+	if err != nil {
+		return nil, fmt.Errorf("error check is table exists: %w", err)
 	}
 
-	return db, nil
+	if !exists {
+		err = psql.createTable()
+		if err != nil {
+			return nil, fmt.Errorf("error create table: %w", err)
+		}
+	}
+
+	Count++
+
+	return psql, nil
 }
 
-func (db *DB) Save(saveStr string) (string, error) {
-	return saveStr, nil //TODO improve in future
+func (psql *DB) Save(longURL string) (string, error) {
+	shortURL := utils.RandomString()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	_, err := psql.db.Exec(ctx, `INSERT INTO yandex (id, longurl, shorturl) VALUES ($1, $2, $3);`, Count, longURL, shortURL)
+	if err != nil {
+		return "", fmt.Errorf("error is INSERT data in database: %w", err)
+	}
+
+	Count++
+	return shortURL, nil
 }
 
-func (db *DB) Get(getStr string) string {
-	return getStr //TODO improve in future
+func (psql *DB) Get(shortURL string) string {
+	var longURL string
+
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1`, shortURL)
+
+	err := row.Scan(&longURL)
+	if err != nil {
+		logger.Errorf("error is Scan data in SELECT Query: %s", err)
+		return ""
+	}
+
+	return longURL
 }
 
-func (db *DB) Close() error {
-	return nil //TODO improve in future
+func (psql *DB) Close() error {
+	//if err := psql.db.Close; err != nil {
+	//	logger.Errorf("error close db: %s", err)
+	//}
+
+	return nil //TODO заглушка на будущее, кажется что в бд этот метод вообще не нужен
+}
+func (psql *DB) createTable() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	_, err := psql.db.Exec(ctx,
+		`CREATE TABLE IF NOT EXISTS yandex (
+    		id SERIAL PRIMARY KEY,
+   			longurl VARCHAR(255) NOT NULL,
+   			shorturl VARCHAR(255) NOT NULL);`)
+
+	return err
+}
+
+func (psql *DB) checkIsTablesExists() (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	row := psql.db.QueryRow(ctx, `SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'yandex')`)
+
+	var res bool
+
+	err := row.Scan(&res)
+	if err != nil {
+		return false, fmt.Errorf("error scan: %w", err)
+	}
+
+	return res, nil
+}
+
+func (psql *DB) Pool() bool {
+	return psql.db.Ping(context.Background()) == nil
 }

@@ -2,10 +2,11 @@ package storage
 
 import (
 	"fmt"
+
 	"github.com/kisanetik/learn_go_inc1/internal/config"
+	"github.com/kisanetik/learn_go_inc1/internal/storage/database/postgres"
 	"github.com/kisanetik/learn_go_inc1/internal/storage/fs"
 	"github.com/kisanetik/learn_go_inc1/internal/storage/mem"
-	"os"
 )
 
 type Storage interface {
@@ -18,13 +19,12 @@ func NewStorage(cfg config.Config) (Storage, error) {
 	var s Storage
 	var err error
 
-	if path := cfg.FileStoragePath; path != "" {
-		file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
-		if err != nil {
-			return nil, fmt.Errorf("cannot open file: %w", err)
+	if cfg.DatabaseDSN != "" {
+		if s, err = postgres.NewPostgresDB(cfg.DatabaseDSN); err != nil {
+			return nil, fmt.Errorf("cannot database storage: %w", err)
 		}
-
-		if s, err = fs.NewFs(file); err != nil {
+	} else if cfg.FileStoragePath != "" {
+		if s, err = fs.NewFsFromFile(cfg.FileStoragePath); err != nil {
 			return nil, fmt.Errorf("error NewFs file: %w", err)
 		}
 	} else {

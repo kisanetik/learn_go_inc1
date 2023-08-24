@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"bytes"
-	"github.com/kisanetik/learn_go_inc1/internal/config"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/kisanetik/learn_go_inc1/internal/config"
 )
 
 func TestApp_JSONHandler(t *testing.T) {

@@ -1,11 +1,11 @@
 package handlers
 
 import (
+	"github.com/go-chi/chi/v5"
 	"github.com/kisanetik/learn_go_inc1/internal/config"
 	"github.com/kisanetik/learn_go_inc1/internal/logger"
 	"github.com/kisanetik/learn_go_inc1/internal/middleware/gzip"
 	"github.com/kisanetik/learn_go_inc1/internal/storage"
-	"github.com/go-chi/chi/v5"
 )
 
 type App struct {

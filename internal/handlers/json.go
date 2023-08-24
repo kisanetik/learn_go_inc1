@@ -2,9 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/kisanetik/learn_go_inc1/internal/logger"
 	"net/http"
 	"net/url"
+
+	"github.com/kisanetik/learn_go_inc1/internal/logger"
 )
 
 type URLRequest struct {

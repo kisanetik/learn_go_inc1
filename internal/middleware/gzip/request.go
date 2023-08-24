@@ -2,9 +2,10 @@ package gzip
 
 import (
 	"compress/gzip"
-	"github.com/kisanetik/learn_go_inc1/internal/logger"
 	"net/http"
 	"strings"
+
+	"github.com/kisanetik/learn_go_inc1/internal/logger"
 )
 
 func Request(next http.Handler) http.Handler {

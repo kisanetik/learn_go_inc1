@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"bytes"
-	"github.com/kisanetik/learn_go_inc1/internal/config"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/kisanetik/learn_go_inc1/internal/config"
 )
 
 type mockStorage struct {

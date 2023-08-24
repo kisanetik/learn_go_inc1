@@ -5,9 +5,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
+
 	"github.com/kisanetik/learn_go_inc1/internal/logger"
 	"github.com/kisanetik/learn_go_inc1/internal/utils"
-	"os"
 )
 
 type Fs struct {
@@ -20,6 +21,15 @@ type URLData struct {
 	UUID        string `json:"uuid"`
 	ShortURL    string `json:"short_url"`
 	OriginalURL string `json:"original_url"`
+}
+
+func NewFsFromFile(path string) (*Fs, error) {
+	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
+	if err != nil {
+		return nil, fmt.Errorf("cannot open file: %w", err)
+	}
+
+	return NewFs(file)
 }
 
 func NewFs(file *os.File) (*Fs, error) {

@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"github.com/kisanetik/learn_go_inc1/internal/logger"
 	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/kisanetik/learn_go_inc1/internal/logger"
 )
 
 func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {

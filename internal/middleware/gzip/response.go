@@ -2,10 +2,11 @@ package gzip
 
 import (
 	"compress/gzip"
-	"github.com/kisanetik/learn_go_inc1/internal/logger"
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/kisanetik/learn_go_inc1/internal/logger"
 )
 
 type gzipWriter struct {
@@ -26,7 +27,7 @@ func Response(next http.Handler) http.Handler {
 
 		gz, err := gzip.NewWriterLevel(w, gzip.BestSpeed)
 		if err != nil {
-			logger.Errorf("New writer level is error: %s", err)
+			logger.Errorf("new writer level is error: %s", err)
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}

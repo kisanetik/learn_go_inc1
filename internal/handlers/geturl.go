@@ -2,9 +2,10 @@ package handlers
 
 import (
 	"errors"
-	"github.com/kisanetik/learn_go_inc1/internal/logger"
-	"github.com/go-chi/chi/v5"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/kisanetik/learn_go_inc1/internal/logger"
 )
 
 func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
