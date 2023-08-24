@@ -2,8 +2,9 @@ package postgres
 
 import (
 	"context"
-	"github.com/kisanetik/learn_go_inc1/internal/logger"
+
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/kisanetik/learn_go_inc1/internal/logger"
 )
 
 type DB struct {
@@ -18,7 +19,7 @@ func NewDB(addrConn string) (*DB, error) {
 
 	conn, err := pgxpool.NewWithConfig(context.Background(), addr)
 	if err != nil {
-		logger``.Errorf("Error create NewWithConfig : %s", err)
+		logger.Errorf("Error create NewWithConfig : %s", err)
 	}
 
 	db := &DB{
