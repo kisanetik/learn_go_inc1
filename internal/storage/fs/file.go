@@ -102,6 +102,20 @@ func (m *Fs) Get(short, corrID string) (string, string) {
 	return m.cacheURL[short], corrID
 }
 
+func (m *Fs) CheckIsURLExists(longURL string) (string, error) {
+	for long := range m.cacheURL {
+		if long == longURL {
+			return m.cacheURL[longURL], nil
+		}
+	}
+
+	return "", nil
+}
+
 func (m *Fs) Close() error {
 	return m.fh.Close()
+}
+
+func (m *Fs) Ping() bool {
+	return m.fh == nil
 }

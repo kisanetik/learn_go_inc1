@@ -31,6 +31,20 @@ func (m *Mem) Get(short, corrID string) (string, string) {
 	return m.cacheMemory[short], corrID
 }
 
+func (m *Mem) CheckIsURLExists(longURL string) (string, error) {
+	for long := range m.cacheMemory {
+		if long == longURL {
+			return m.cacheMemory[longURL], nil
+		}
+	}
+
+	return "", nil
+}
+
 func (m *Mem) Close() error {
 	return nil
+}
+
+func (m *Mem) Ping() bool {
+	return m.cacheMemory == nil
 }

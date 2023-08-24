@@ -29,25 +29,42 @@ func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, item := range req {
-
-		short, err := a.Storage.Save(item.OriginalURL, item.CorrelationID)
-		if err != nil {
-			logger.Errorf("batch save is error: %s", err)
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
 		var r URLsResponse
-		r.CorrelationID = item.CorrelationID
-		r.ShortURL, err = url.JoinPath(a.Config.BaseShortURL, short)
+
+		short, err := a.Storage.CheckIsURLExists(item.OriginalURL)
 		if err != nil {
-			logger.Errorf("join path has error: %s", err)
-			w.WriteHeader(http.StatusBadRequest)
-			return
+			logger.Errorf("error CheckIsURLExists on BatchHandler: %s", err)
 		}
 
-		_, r.CorrelationID = a.Storage.Get(r.ShortURL, item.CorrelationID)
-		resp = append(resp, r)
+		if short != "" {
+			r.CorrelationID = item.CorrelationID
+			r.ShortURL, err = url.JoinPath(a.Config.BaseShortURL, short)
+			if err != nil {
+				logger.Errorf("error JoinPath on BatchHandler: %s", err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
+			resp = append(resp, r)
+			w.WriteHeader(http.StatusConflict)
+		} else {
+			short, err := a.Storage.Save(item.OriginalURL, item.CorrelationID)
+			if err != nil {
+				logger.Errorf("batch save is error: %s", err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
+			r.CorrelationID = item.CorrelationID
+			r.ShortURL, err = url.JoinPath(a.Config.BaseShortURL, short)
+			if err != nil {
+				logger.Errorf("join path has error: %s", err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
+			resp = append(resp, r)
+		}
 	}
 
 	respContent, err := json.Marshal(resp)
