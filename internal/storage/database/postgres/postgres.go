@@ -21,7 +21,7 @@ var Count uint64
 func NewPostgresDB(addrConn string) (*DB, error) {
 	conn, err := pgxpool.ParseConfig(addrConn)
 	if err != nil {
-		return nil, fmt.Errorf("Error config parse: %w", err)
+		return nil, fmt.Errorf("error config parse: %w", err)
 	}
 
 	conn.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
@@ -31,20 +31,20 @@ func NewPostgresDB(addrConn string) (*DB, error) {
 
 	db, err := pgxpool.NewWithConfig(context.Background(), conn)
 	if err != nil {
-		return nil, fmt.Errorf("Error creating config: %w", err)
+		return nil, fmt.Errorf("error creating config: %w", err)
 	}
 
 	psql := &DB{db: db}
 
 	exists, err := psql.checkIsTablesExists()
 	if err != nil {
-		return nil, fmt.Errorf("Error check is table exists: %w", err)
+		return nil, fmt.Errorf("error check is table exists: %w", err)
 	}
 
 	if !exists {
 		err = psql.createTable()
 		if err != nil {
-			return nil, fmt.Errorf("Error creating table: %w", err)
+			return nil, fmt.Errorf("error creating table: %w", err)
 		}
 	}
 
@@ -61,7 +61,7 @@ func (psql *DB) Save(longURL string) (string, error) {
 
 	_, err := psql.db.Exec(ctx, `INSERT INTO yandex (id, longurl, shorturl) VALUES ($1, $2, $3);`, Count, longURL, shortURL)
 	if err != nil {
-		return "", fmt.Errorf("Error when INSERT data in database: %w", err)
+		return "", fmt.Errorf("error when INSERT data in database: %w", err)
 	}
 
 	Count++
@@ -78,7 +78,7 @@ func (psql *DB) Get(shortURL string) string {
 
 	err := row.Scan(&longURL)
 	if err != nil {
-		logger.Errorf("Error Scan data in SELECT Query: %s", err)
+		logger.Errorf("error Scan data in SELECT Query: %s", err)
 		return ""
 	}
 
@@ -115,7 +115,7 @@ func (psql *DB) checkIsTablesExists() (bool, error) {
 
 	err := row.Scan(&res)
 	if err != nil {
-		return false, fmt.Errorf("Error scan: %w", err)
+		return false, fmt.Errorf("error scan: %w", err)
 	}
 
 	return res, nil

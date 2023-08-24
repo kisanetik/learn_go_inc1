@@ -58,7 +58,7 @@ func NewFs(file *os.File) (*Fs, error) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("Scanner error: %w", err)
+		return nil, fmt.Errorf("scanner error: %w", err)
 	}
 
 	return fs, nil
@@ -73,17 +73,17 @@ func (m *Fs) Save(long string) (string, error) {
 
 	jsonData, err := json.Marshal(urlData)
 	if err != nil {
-		return "", fmt.Errorf("Can't marshal json: %w", err)
+		return "", fmt.Errorf("can't marshal json: %w", err)
 	}
 
 	_, err = m.fh.Write([]byte("\n"))
 	if err != nil {
-		return "", fmt.Errorf("Can't write to file: %w", err)
+		return "", fmt.Errorf("can't write to file: %w", err)
 	}
 
 	_, err = m.fh.Write(jsonData)
 	if err != nil {
-		return "", fmt.Errorf("Can't write to file: %w", err)
+		return "", fmt.Errorf("can't write to file: %w", err)
 	}
 
 	m.count++

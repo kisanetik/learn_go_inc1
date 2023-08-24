@@ -21,15 +21,15 @@ func NewStorage(cfg config.Config) (Storage, error) {
 
 	if cfg.DatabaseDSN != "" {
 		if s, err = postgres.NewPostgresDB(cfg.DatabaseDSN); err != nil {
-			return nil, fmt.Errorf("Can't database storage: %w", err)
+			return nil, fmt.Errorf("can't database storage: %w", err)
 		}
 	} else if cfg.FileStoragePath != "" {
 		if s, err = fs.NewFsFromFile(cfg.FileStoragePath); err != nil {
-			return nil, fmt.Errorf("Error NewFs file: %w", err)
+			return nil, fmt.Errorf("error NewFs file: %w", err)
 		}
 	} else {
 		if s, err = mem.NewMem(); err != nil {
-			return nil, fmt.Errorf("Error NewMem: %w", err)
+			return nil, fmt.Errorf("error NewMem: %w", err)
 		}
 	}
 
