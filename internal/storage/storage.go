@@ -1,44 +1,37 @@
 package storage
 
 import (
-	"encoding/json"
+	"fmt"
+	"github.com/kisanetik/learn_go_inc1/internal/config"
+	"github.com/kisanetik/learn_go_inc1/internal/storage/fs"
+	"github.com/kisanetik/learn_go_inc1/internal/storage/mem"
 	"os"
-
-	"github.com/kisanetik/learn_go_inc1/config"
 )
 
-type URLData struct {
-	UUID        string `json:"uuid"`
-	ShortURL    string `json:"short_url"`
-	OriginalURL string `json:"original_url"`
+type Storage interface {
+	Save(string) (string, error)
+	Get(string) string
+	Close() error
 }
 
-type Mem map[string]URLData
+func NewStorage(cfg config.Config) (Storage, error) {
+	var s Storage
+	var err error
 
-var cache Mem
+	if path := cfg.FileStoragePath; path != "" {
+		file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
+		if err != nil {
+			return nil, fmt.Errorf("cannot open file: %w", err)
+		}
 
-func GetData() Mem {
-	if nil == cache {
-		cache = Mem{}
-		serialized, err := os.ReadFile(config.GetConf().FileStoragePath)
-		if !os.IsNotExist(err) && len(serialized) > 2 {
-			if err := json.Unmarshal(serialized, &cache); err != nil {
-				panic(err)
-			}
-
+		if s, err = fs.NewFs(file); err != nil {
+			return nil, fmt.Errorf("error NewFs file: %w", err)
+		}
+	} else {
+		if s, err = mem.NewMem(); err != nil {
+			return nil, fmt.Errorf("error NewMem: %w", err)
 		}
 	}
 
-	return cache
-}
-
-func AddToData(record URLData) {
-	cache := GetData()
-	cache[record.UUID] = record
-}
-
-func Save() bool {
-	strJSON, _ := json.Marshal(cache)
-	err := os.WriteFile(config.GetConf().FileStoragePath, strJSON, 0666)
-	return err == nil
+	return s, nil
 }

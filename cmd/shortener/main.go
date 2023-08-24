@@ -1,33 +1,24 @@
 package main
 
 import (
-	"flag"
+	"github.com/kisanetik/learn_go_inc1/internal/handlers"
+	"github.com/kisanetik/learn_go_inc1/internal/logger"
+	store "github.com/kisanetik/learn_go_inc1/internal/storage"
 	"log"
 	"net/http"
-
-	"github.com/kisanetik/learn_go_inc1/config"
-	"github.com/kisanetik/learn_go_inc1/internal/handlers"
-	gzip "github.com/kisanetik/learn_go_inc1/internal/middleware"
-
-	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/chi/v5"
 )
 
 func main() {
-	flag.Parse()
-	_, port := config.LoadConfig()
+	cfg, err := Config.LoadConfig()
+	if err != nil {
+		logger.Fatalf("Can't read config: %w", err)
+	}
 
-	r := chi.NewRouter()
+	store, err := store.NewStorage(cfg)
+	if err != nil {
+		logger.Fatalf("Can't download storage: %w", err)
+	}
 
-	//MIDDLEWARE LIST
-	r.Use(middleware.Logger)
-	r.Use(gzip.Request)
-	r.Use(gzip.Response)
-
-	//ROUTES LIST
-	r.Get("/{id}", handlers.MethodGet)
-	r.Post("/", handlers.MethodPost)
-	r.Post("/api/shorten", handlers.JSONsPost)
-
-	log.Fatal(http.ListenAndServe(port, r))
+	app := handlers.NewApp(cfg, store)
+	log.Fatal(http.ListenAndServe(cfg.ServerAddr, app))
 }
