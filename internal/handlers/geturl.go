@@ -16,7 +16,7 @@ func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	m := a.Storage.Get(url)
+	m, _ := a.Storage.Get(url, "")
 	if m == "" {
 		logger.Errorf("get url is bad: %s", url)
 		w.WriteHeader(http.StatusBadRequest)

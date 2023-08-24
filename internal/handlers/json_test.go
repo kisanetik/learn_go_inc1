@@ -45,10 +45,10 @@ func TestApp_JSONHandler(t *testing.T) {
 
 			resp, err := http.Post(ts.URL+"/api/shorten", "application/json", bytes.NewBuffer(tt.body))
 			if err != nil {
-				t.Errorf("Failed to make POST request: %v", err)
+				t.Errorf("failed to make POST request: %v", err)
 			}
 			if resp.StatusCode != tt.statusCode {
-				t.Errorf("Expected status code %v, got %v", tt.statusCode, resp.StatusCode)
+				t.Errorf("expected status code %v, got %v", tt.statusCode, resp.StatusCode)
 			}
 
 			defer resp.Body.Close()

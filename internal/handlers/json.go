@@ -21,28 +21,28 @@ func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
 	var resp ResultResponse
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		logger.Errorf("json decode error: %s", err)
+		logger.Errorf("json decode is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	short, err := a.Storage.Save(req.ServerURL)
+	short, err := a.Storage.Save(req.ServerURL, "")
 	if err != nil {
-		logger.Errorf("Storage save error: %s", err)
+		logger.Errorf("storage save is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	resp.BaseShortURL, err = url.JoinPath(a.Config.BaseShortURL, short)
 	if err != nil {
-		logger.Errorf("Join err: %s", err)
+		logger.Errorf("join path have err: %s", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	respContent, err := json.Marshal(resp)
 	if err != nil {
-		logger.Errorf("JSON marshal error: %s", err)
+		logger.Errorf("json marshal is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

@@ -12,15 +12,17 @@ import (
 )
 
 type Fs struct {
-	fh    *os.File
-	cache map[string]string
-	count int64
+	fh               *os.File
+	cacheURL         map[string]string
+	cacheCorrelation map[string]string
+	count            int64
 }
 
 type URLData struct {
-	UUID        string `json:"uuid"`
-	ShortURL    string `json:"short_url"`
-	OriginalURL string `json:"original_url"`
+	UUID          string `json:"uuid"`
+	ShortURL      string `json:"short_url"`
+	OriginalURL   string `json:"original_url"`
+	CorrelationID string `json:"correlation_id"`
 }
 
 func NewFsFromFile(path string) (*Fs, error) {
@@ -34,9 +36,10 @@ func NewFsFromFile(path string) (*Fs, error) {
 
 func NewFs(file *os.File) (*Fs, error) {
 	fs := &Fs{
-		fh:    file,
-		cache: make(map[string]string),
-		count: 0,
+		fh:               file,
+		cacheURL:         make(map[string]string),
+		cacheCorrelation: make(map[string]string),
+		count:            0,
 	}
 
 	urlData := &URLData{}
@@ -51,49 +54,52 @@ func NewFs(file *os.File) (*Fs, error) {
 
 		err := json.NewDecoder(bytes.NewReader([]byte(line))).Decode(&urlData)
 		if err != nil {
-			logger.Errorf("Error json decode in NewFs: %s", err)
+			logger.Errorf("error json decode in NewFs: %s", err)
 		}
 
-		fs.cache[urlData.ShortURL] = urlData.OriginalURL
+		fs.cacheURL[urlData.ShortURL] = urlData.OriginalURL
+		fs.cacheCorrelation[urlData.CorrelationID] = urlData.OriginalURL
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("scanner error: %w", err)
+		return nil, fmt.Errorf("scanner is error: %w", err)
 	}
 
 	return fs, nil
 }
 
-func (m *Fs) Save(long string) (string, error) {
+func (m *Fs) Save(long, corrID string) (string, error) {
 	urlData := &URLData{
-		UUID:        fmt.Sprintf("%d", m.count),
-		ShortURL:    utils.RandomString(),
-		OriginalURL: long,
+		UUID:          fmt.Sprintf("%d", m.count),
+		ShortURL:      utils.RandomString(),
+		CorrelationID: corrID,
+		OriginalURL:   long,
 	}
 
 	jsonData, err := json.Marshal(urlData)
 	if err != nil {
-		return "", fmt.Errorf("can't marshal json: %w", err)
+		return "", fmt.Errorf("cannot marshal json: %w", err)
 	}
 
 	_, err = m.fh.Write([]byte("\n"))
 	if err != nil {
-		return "", fmt.Errorf("can't write to file: %w", err)
+		return "", fmt.Errorf("cannot write to file: %w", err)
 	}
 
 	_, err = m.fh.Write(jsonData)
 	if err != nil {
-		return "", fmt.Errorf("can't write to file: %w", err)
+		return "", fmt.Errorf("cannot write to file: %w", err)
 	}
 
 	m.count++
-	m.cache[urlData.ShortURL] = urlData.OriginalURL
 
+	m.cacheURL[urlData.ShortURL] = urlData.OriginalURL
+	m.cacheCorrelation[urlData.CorrelationID] = urlData.OriginalURL
 	return urlData.ShortURL, nil
 }
 
-func (m *Fs) Get(short string) string {
-	return m.cache[short]
+func (m *Fs) Get(short, corrID string) (string, string) {
+	return m.cacheURL[short], corrID
 }
 
 func (m *Fs) Close() error {

@@ -13,7 +13,7 @@ func Request(next http.Handler) http.Handler {
 		if strings.Contains(r.Header.Get("Content-Encoding"), "gzip") {
 			gz, err := gzip.NewReader(r.Body)
 			if err != nil {
-				logger.Errorf("New reader error: %s", err)
+				logger.Errorf("new reader is error: %s", err)
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}

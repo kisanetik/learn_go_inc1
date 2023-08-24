@@ -27,7 +27,7 @@ func Response(next http.Handler) http.Handler {
 
 		gz, err := gzip.NewWriterLevel(w, gzip.BestSpeed)
 		if err != nil {
-			logger.Errorf("New writer level error: %s", err)
+			logger.Errorf("new writer level is error: %s", err)
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}

@@ -10,8 +10,8 @@ import (
 )
 
 type Storage interface {
-	Save(string) (string, error)
-	Get(string) string
+	Save(string, string) (string, error)
+	Get(string, string) (string, string)
 	Close() error
 }
 
@@ -21,7 +21,7 @@ func NewStorage(cfg config.Config) (Storage, error) {
 
 	if cfg.DatabaseDSN != "" {
 		if s, err = postgres.NewPostgresDB(cfg.DatabaseDSN); err != nil {
-			return nil, fmt.Errorf("can't database storage: %w", err)
+			return nil, fmt.Errorf("cannot database storage: %w", err)
 		}
 	} else if cfg.FileStoragePath != "" {
 		if s, err = fs.NewFsFromFile(cfg.FileStoragePath); err != nil {

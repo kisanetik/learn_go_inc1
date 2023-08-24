@@ -16,11 +16,11 @@ func main() {
 		logger.Fatalf("Can't read config: %w", err)
 	}
 
-	store, err := store.NewStorage(cfg)
+	storage, err := store.NewStorage(cfg)
 	if err != nil {
-		logger.Fatalf("Can't download storage: %w", err)
+		logger.Fatalf("Can't storage download: %w", err)
 	}
 
-	app := handlers.NewApp(cfg, store)
+	app := handlers.NewApp(cfg, storage)
 	log.Fatal(http.ListenAndServe(cfg.ServerAddr, app))
 }

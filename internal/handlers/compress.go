@@ -11,21 +11,21 @@ import (
 func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil || len(body) == 0 {
-		logger.Errorf("Body can't be empty: %s", err)
+		logger.Errorf("body is nil or empty: %s", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	short, err := a.Storage.Save(string(body))
+	short, err := a.Storage.Save(string(body), "")
 	if err != nil {
-		logger.Errorf("Storage save error: %s", err)
+		logger.Errorf("storage save is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	long, err := url.JoinPath(a.Config.BaseShortURL, short)
 	if err != nil {
-		logger.Errorf("Join path err: %s", err)
+		logger.Errorf("join path have err: %s", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
